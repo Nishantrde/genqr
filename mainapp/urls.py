@@ -3,6 +3,6 @@ from .views import *
 
 urlpatterns = [
     path("", index),
-    path('visit/<uuid:uuid>/', visit, name='show_data'),
+    path('visit/<uuid:uuid>', visit, name='show_data'),
 
 ]
