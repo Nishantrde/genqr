@@ -9,7 +9,7 @@ import uuid
 def generate_qr_code(data):
     key = str(uuid.uuid4())
     print(key)
-    qr_data = "http://127.0.0.1:8000/visit/"+key
+    qr_data = "https://genqr-ten.vercel.app/visit/"+key
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
