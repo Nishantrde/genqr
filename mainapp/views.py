@@ -10,7 +10,7 @@ def index(request):
         qr_img = generate_qr_code(site_add)
     return render(request, "index.html", {"photo":qr_img})
 
-def visit(uuid):
+def visit(request, uuid):
     print(uuid)
     site = Qrcodes.objects.get(uuid=uuid)
     print(site.site)
