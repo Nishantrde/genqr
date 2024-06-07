@@ -155,6 +155,21 @@
                 width: 80%;
             }
         }
+        @media screen and (max-width: 600px) {
+            .container {
+                width: 90%; /* Adjust container width for smaller screens */
+            }
+            canvas {
+                width: 100%; /* Make canvas responsive */
+                max-width: 200px; /* Limit canvas width on smaller screens */
+            }
+            .colorDisplay {
+                width: 80%; /* Adjust color display width */
+            }
+            input[type="submit"] {
+                width: 80%; /* Adjust submit button width */
+            }
+        }
     </style>
 </head>
 <body>
