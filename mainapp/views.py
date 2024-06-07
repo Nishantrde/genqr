@@ -24,6 +24,7 @@ def visit(request, uuid):
 
 def custom(request):
     if request.method == "POST":
-        print(request.POST.get("front"))
+        front = request.POST.get("front")
+        back = request.POST.get("back")
     return render(request, "custom.html")
 

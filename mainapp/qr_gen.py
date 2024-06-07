@@ -4,10 +4,10 @@ from tempfile import NamedTemporaryFile
 from .models import *
 import os
 import uuid
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw
 
 
-def generate_qr_code(data):
+def generate_qr_code(data, front=(0, 0, 0), back=(255, 255, 255)):
     key = str(uuid.uuid4())
     print(key)
     qr_data = "https://genqr-ten.vercel.app/visit/"+key
@@ -20,7 +20,7 @@ def generate_qr_code(data):
     qr.add_data(qr_data)
     qr.make(fit=True)
 
-    img = qr.make_image(fill_color=(0, 255, 0), back_color=(0, 0, 0)).convert("RGBA")
+    img = qr.make_image(fill_color=front, back_color=back).convert("RGBA")
 
     overlay = Image.new("RGBA", img.size)
     draw = ImageDraw.Draw(overlay)

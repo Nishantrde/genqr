@@ -64,9 +64,11 @@
             {% csrf_token %}
             <input type="text" name="site" placeholder="Enter URL">
             <button type="submit">Generate QR Code</button><br><br>
-            <button type="button" onclick="toggleMode()">Custom QR Code</button>
         </form>
-        
+        <form action="custom" method="post">
+            {% csrf_token %}
+            <button type="submit" onclick="toggleMode()">Custom QR Code</button>
+        </form>
         {% if photo %}
         <div class="qr-code">
             <a href="#" onclick="downloadImage('{{ photo }}', 'qr_code.png');">

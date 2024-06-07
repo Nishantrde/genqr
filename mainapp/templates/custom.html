@@ -98,6 +98,21 @@
         input[type="submit"]:hover {
             background-color: #0056b3;
         }
+        @media screen and (max-width: 600px) {
+            .container {
+                flex-direction: column;
+                margin-bottom: 20px;
+            }
+            .container-group {
+                flex-direction: column;
+            }
+            .colorDisplay {
+                width: 80%;
+            }
+            input[type="submit"] {
+                width: 80%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -119,8 +134,10 @@
     <!-- Form for submitting color wheel data -->
     <form action="custom" method="post">
         {% csrf_token %}
+        
         <input type="hidden" id="color1" name="front" value="(255, 255, 255)">
         <input type="hidden" id="color2" name="back" value="(255, 255, 255)">
+        <input type="text" name="site" placeholder="Enter URL">
         <input type="submit" value="Submit">
     </form>
 
