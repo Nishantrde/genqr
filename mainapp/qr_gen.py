@@ -7,7 +7,7 @@ import uuid
 from PIL import Image, ImageDraw
 
 
-def generate_qr_code(data, front=(0, 0, 0), back=(255, 255, 255)):
+def generate_qr_code(data, logo = None, front=(0, 0, 0), back=(255, 255, 255)):
     key = str(uuid.uuid4())
     print(key)
     qr_data = "https://genqr-ten.vercel.app/visit/"+key
@@ -29,8 +29,8 @@ def generate_qr_code(data, front=(0, 0, 0), back=(255, 255, 255)):
     radius = min(img.width, img.height) // 2
     
     for r in range(radius,0,-1):
-        alpha = int(255 * (0.2 - r/radius))
-        color = (24, 21, 245, alpha)
+        alpha = int(255 * (0.1 - r/radius))
+        color = front + (alpha,)
         draw.ellipse(
             (center_x - r, center_y - r, center_x + r, center_y + r),
             fill =  color,
@@ -38,7 +38,17 @@ def generate_qr_code(data, front=(0, 0, 0), back=(255, 255, 255)):
         )
     img = Image.alpha_composite(img, overlay)
 
-    # Save QR code image to a temporary file
+    if logo != None:
+        logo = Image.open(logo)
+        logo_size = (img.width//4, img.height//4)
+        logo = logo.resize(logo_size, Image.LANCZOS)
+        logo_position = (
+            (img.width-logo_size[0]) // 2,
+            (img.height-logo_size[1]) // 2
+        )
+
+        img.paste(logo, logo_position, logo)
+    
     temp_file = NamedTemporaryFile(delete=False)
     img.save(temp_file.name, format='PNG')
 

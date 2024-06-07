@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dual Color Wheel</title>
+    <title>Dual Color Wheel with Logo Upload</title>
     <style>
         body {
             display: flex;
@@ -98,6 +98,48 @@
         input[type="submit"]:hover {
             background-color: #0056b3;
         }
+
+        .logoUpload {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .logoUpload input[type="file"] {
+            display: none;
+        }
+
+        .logoUpload label {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .logoUpload label:hover {
+            background-color: #0056b3;
+        }
+
+        .logoPreview {
+            margin-top: 20px;
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .logoPreview img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
         @media screen and (max-width: 600px) {
             .container {
                 flex-direction: column;
@@ -123,25 +165,56 @@
             <div id="colorDisplay1" class="colorDisplay light">(255, 255, 255)</div>
             <input id="brightness1" class="brightnessPanel" type="range" min="0" max="100" value="50">
         </div>
-        <div class="container">
-            <h1>Back</h1>
-            <canvas id="colorWheel2" width="200" height="200"></canvas>
-            <div id="colorDisplay2" class="colorDisplay light">(255, 255, 255)</div>
-            <input id="brightness2" class="brightnessPanel" type="range" min="0" max="100" value="50">
-        </div>
+        
     </div>
     
     <!-- Form for submitting color wheel data -->
-    <form action="custom" method="post">
+    <form action="custom" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         
         <input type="hidden" id="color1" name="front" value="(255, 255, 255)">
-        <input type="hidden" id="color2" name="back" value="(255, 255, 255)">
+        
         <input type="text" name="site" placeholder="Enter URL">
+        
+        <!-- Logo Upload Section -->
+        <div class="logoUpload">
+            <label for="logoInput">Upload Logo</label>
+            <input type="file" id="logoInput" name="logo" accept="image/*" onchange="previewLogo()">
+        </div>
+        
+        <!-- Logo Preview -->
+        <div class="logoPreview" id="logoPreview">
+            <!-- Image will be displayed here -->
+        </div>
+
         <input type="submit" value="Submit">
     </form>
-
+    
+    {% if photo %}
+        <div class="qr-code">
+            <a href="#" onclick="downloadImage('{{ photo }}', 'qr_code.png');">
+                <img src="{{ photo }}" alt="QR Code">
+            </a>
+        </div>
+    {% endif %}
+    
     <script>
+        function downloadImage(url, filename) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url.replace(/^http:\/\//i, 'https://'), true);
+            xhr.responseType = 'blob';
+            xhr.onload = function () {
+                var urlCreator = window.URL || window.webkitURL;
+                var imageUrl = urlCreator.createObjectURL(this.response);
+                var tag = document.createElement('a');
+                tag.href = imageUrl;
+                tag.download = filename;
+                document.body.appendChild(tag);
+                tag.click();
+                document.body.removeChild(tag);
+            };
+            xhr.send();
+        }
         function setupColorWheel(canvasId, colorDisplayId, brightnessId) {
             const canvas = document.getElementById(canvasId);
             const ctx = canvas.getContext('2d');
@@ -220,6 +293,22 @@
             brightnessInput.addEventListener('input', () => {
                 drawColorWheel();
             });
+        }
+
+        function previewLogo() {
+            const file = document.getElementById('logoInput').files[0];
+            const preview = document.getElementById('logoPreview');
+            const reader = new FileReader();
+
+            reader.onloadend = function() {
+                preview.innerHTML = `<img src="${reader.result}" alt="Logo">`;
+            };
+
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = '';
+            }
         }
 
         setupColorWheel('colorWheel1', 'colorDisplay1', 'brightness1');
