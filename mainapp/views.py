@@ -21,3 +21,9 @@ def visit(request, uuid):
     site = Qrcodes.objects.get(uuid=uuid)
     print(site.site)
     return redirect(site.site)
+
+def custom(request):
+    if request.method == "POST":
+        print(request.POST.get("front"))
+    return render(request, "custom.html")
+

@@ -64,8 +64,7 @@
             {% csrf_token %}
             <input type="text" name="site" placeholder="Enter URL">
             <button type="submit">Generate QR Code</button><br><br>
-            <button type="button" onclick="toggleMode()">Normal Mode</button>
-            <button type="button" onclick="toggleMode()">Custom Mode</button>
+            <button type="button" onclick="toggleMode()">Custom QR Code</button>
         </form>
         
         {% if photo %}
