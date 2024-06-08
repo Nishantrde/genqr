@@ -73,7 +73,11 @@
 
         /* Container styling for side-by-side layout */
         .container-group {
-            display: flex;
+        display: flex;
+        flex-direction: column; /* Display items vertically */
+        align-items: center; /* Center items horizontally */
+        justify-content: center; /* Center items vertically */
+        height: 100vh; /* Ensure the container covers the entire viewport vertically */
         }
 
         /* Form styling */
@@ -179,39 +183,42 @@
             <canvas id="colorWheel1" width="200" height="200"></canvas>
             <div id="colorDisplay1" class="colorDisplay light">(255, 255, 255)</div>
             <input id="brightness1" class="brightnessPanel" type="range" min="0" max="100" value="50">
-        </div>
+            <form action="custom" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <input type="hidden" id="color1" name="front" value="(255, 255, 255)">
+                
+                <input type="text" name="site" placeholder="Enter URL">
+                
+                <!-- Logo Upload Section -->
+                <div class="logoUpload">
+                    <label for="logoInput">Upload Logo</label>
+                    <input type="file" id="logoInput" name="logo" accept="image/*" onchange="previewLogo()">
+                </div>
+                
+                <!-- Logo Preview -->
+                <div class="logoPreview" id="logoPreview">
+                    <!-- Image will be displayed here -->
+                </div>
+                <div class="logoPreview_msg" id="logoPreview_msg">
+                    <!-- Image will be displayed here -->
+                </div>
         
-    </div>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+        {% if photo %}
+            <div class="qr-code">
+                <a href="#" onclick="downloadImage('{{ photo }}', 'qr_code.png');">
+                    <img src="{{ photo }}" alt="QR Code">
+                </a>
+            </div>
+        {% endif %}
+        </div>
     
     <!-- Form for submitting color wheel data -->
-    <form action="custom" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        
-        <input type="hidden" id="color1" name="front" value="(255, 255, 255)">
-        
-        <input type="text" name="site" placeholder="Enter URL">
-        
-        <!-- Logo Upload Section -->
-        <div class="logoUpload">
-            <label for="logoInput">Upload Logo</label>
-            <input type="file" id="logoInput" name="logo" accept="image/*" onchange="previewLogo()">
-        </div>
-        
-        <!-- Logo Preview -->
-        <div class="logoPreview" id="logoPreview">
-            <!-- Image will be displayed here -->
-        </div>
-
-        <input type="submit" value="Submit">
-    </form>
     
-    {% if photo %}
-        <div class="qr-code">
-            <a href="#" onclick="downloadImage('{{ photo }}', 'qr_code.png');">
-                <img src="{{ photo }}" alt="QR Code">
-            </a>
-        </div>
-    {% endif %}
+
     
     <script>
         function downloadImage(url, filename) {
@@ -313,18 +320,20 @@
         function previewLogo() {
             const file = document.getElementById('logoInput').files[0];
             const preview = document.getElementById('logoPreview');
+            const previewmsg = document.getElementById('logoPreview_msg');
+
             const reader = new FileReader();
 
             reader.onloadend = function() {
                 const img = new Image();
                 img.onload = function() {
-                    const maxWidth = 500; // Maximum width for the logo preview
-                    const maxHeight = 500; // Maximum height for the logo preview
+                    const maxWidth = 800; // Maximum width for the logo preview
+                    const maxHeight = 800; // Maximum height for the logo preview
 
                     if (img.width <= maxWidth && img.height <= maxHeight) {
                         preview.innerHTML = `<img src="${reader.result}" alt="Logo">`;
                     } else {
-                        preview.innerHTML = '<p>Logo dimensions are too large. Please upload a smaller logo.</p>';
+                        previewmsg.innerHTML = '<p>Logo dimensions are too large. Please upload a smaller logo.</p>';
                     }
                 };
                 img.src = reader.result;
