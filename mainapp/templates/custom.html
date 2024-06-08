@@ -316,7 +316,18 @@
             const reader = new FileReader();
 
             reader.onloadend = function() {
-                preview.innerHTML = `<img src="${reader.result}" alt="Logo">`;
+                const img = new Image();
+                img.onload = function() {
+                    const maxWidth = 500; // Maximum width for the logo preview
+                    const maxHeight = 500; // Maximum height for the logo preview
+
+                    if (img.width <= maxWidth && img.height <= maxHeight) {
+                        preview.innerHTML = `<img src="${reader.result}" alt="Logo">`;
+                    } else {
+                        preview.innerHTML = '<p>Logo dimensions are too large. Please upload a smaller logo.</p>';
+                    }
+                };
+                img.src = reader.result;
             };
 
             if (file) {
@@ -327,7 +338,7 @@
         }
 
         setupColorWheel('colorWheel1', 'colorDisplay1', 'brightness1');
-        setupColorWheel('colorWheel2', 'colorDisplay2', 'brightness2');
+        
     </script>
 </body>
 </html>
