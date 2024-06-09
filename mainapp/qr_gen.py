@@ -6,7 +6,7 @@ import os
 import uuid
 from PIL import Image, ImageDraw
 
-def generate_qr_code(data, logo=None, front=(0, 0, 0), back=(255, 255, 255)):
+def generate_qr_code(data, logo=None, front=(0, 0, 0), crop = "off", back=(255, 255, 255)):
     key = str(uuid.uuid4())
     print(key)
     qr_data = "https://genqr-ten.vercel.app/visit/" + key
@@ -42,13 +42,14 @@ def generate_qr_code(data, logo=None, front=(0, 0, 0), back=(255, 255, 255)):
         logo_size = (img.width // 4, img.height // 4)
         logo = logo.resize(logo_size, Image.LANCZOS)
         
-        # Create a circular mask
-        mask = Image.new("L", logo_size, 0)
-        mask_draw = ImageDraw.Draw(mask)
-        mask_draw.ellipse((0, 0) + logo_size, fill=255)
+        if crop=="on":
+            # Create a circular mask
+            mask = Image.new("L", logo_size, 0)
+            mask_draw = ImageDraw.Draw(mask)
+            mask_draw.ellipse((0, 0) + logo_size, fill=255)
 
-        # Apply the mask to the logo
-        logo.putalpha(mask)
+            # Apply the mask to the logo
+            logo.putalpha(mask)
 
         logo_position = (
             (img.width - logo_size[0]) // 2,

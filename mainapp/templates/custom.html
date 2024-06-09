@@ -174,12 +174,45 @@
                 width: 80%; /* Adjust submit button width */
             }
         }
+        .cropCheckbox {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.cropCheckbox input[type="checkbox"] {
+    display: none;
+}
+
+.cropCheckbox label {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.cropCheckbox label:hover {
+    background-color: #0056b3;
+}
+
+/* Style for checked state */
+.cropCheckbox input[type="checkbox"]:checked + label {
+    background-color: #0056b3;  
+}
+.cropCheckbox input[type="checkbox"]:checked + label {
+            background-color: #28a745; /* Green color */
+        }
+
+
     </style>
 </head>
 <body>
     <div class="container-group">
         <div class="container">
-            <h1 class="frontText">Front</h1>
+            <h1 class="frontText">QR Data Color</h1>
             <canvas id="colorWheel1" width="200" height="200"></canvas>
             <div id="colorDisplay1" class="colorDisplay light">(255, 255, 255)</div>
             <input id="brightness1" class="brightnessPanel" type="range" min="0" max="100" value="50">
@@ -191,18 +224,29 @@
                 <input type="text" name="site" placeholder="Enter URL">
                 
                 <!-- Logo Upload Section -->
-                <div class="logoUpload">
-                    <label for="logoInput">Upload Logo</label>
-                    <input type="file" id="logoInput" name="logo" accept="image/*" onchange="previewLogo()">
-                </div>
+                
                 
                 <!-- Logo Preview -->
                 <div class="logoPreview" id="logoPreview">
                     <!-- Image will be displayed here -->
                 </div>
+
                 <div class="logoPreview_msg" id="logoPreview_msg">
                     <!-- Image will be displayed here -->
-                </div>
+                </div><br>
+
+                <div class="cropCheckbox">
+                    <input type="checkbox" id="cropCheckbox" name="crop">
+                    <label for="cropCheckbox">Crop Image</label>
+                </div><br>
+                       
+
+                <div class="logoUpload">
+                    <label for="logoInput">Upload Logo</label>
+                    <input type="file" id="logoInput" name="logo" accept="image/*" onchange="previewLogo()">
+                </div><br><br><br>
+
+                
         
                 <input type="submit" value="Submit">
             </form>
@@ -221,6 +265,24 @@
 
     
     <script>
+      document.addEventListener('DOMContentLoaded', function() {
+    // Add event listener to the Crop Image checkbox
+    const cropCheckbox = document.getElementById('cropCheckbox');
+    const submitButton = document.querySelector('input[type="submit"]');
+    
+    cropCheckbox.addEventListener('change', function() {
+        // Check if the checkbox is checked
+        if (cropCheckbox.checked) {
+            // Add a class to the submit button to change its background color to green
+            submitButton.classList.add('clicked');
+        } else {
+            // Remove the class from the submit button if the checkbox is unchecked
+            submitButton.classList.remove('clicked');
+        }
+    });
+});
+
+
         function downloadImage(url, filename) {
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url.replace(/^http:\/\//i, 'https://'), true);

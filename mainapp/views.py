@@ -31,10 +31,11 @@ def custom(request):
         if request.POST.get("front"):
             front = request.POST.get("front")
             logo = request.FILES.get('logo')
+            crop = request.POST.get('crop')
             front = ast.literal_eval(front)
             
-            print(site_add, front, logo)
-            qr_img = generate_qr_code(site_add, logo, front)
+            print(site_add, front, logo, crop)
+            qr_img = generate_qr_code(site_add, logo, front, str(crop))
             # Save the QR code image or its identifier in session or database if you need to persist it
             request.session["qr_image"] = qr_img  # Example usage with session
             return HttpResponseRedirect(request.path_info)  # Redirect to the same page after POST
