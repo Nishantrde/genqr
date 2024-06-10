@@ -1,2 +1,2 @@
 pip3 install -r requirements.txt
-apt install nginx
+sudo apt-get install --reinstall apt
