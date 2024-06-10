@@ -1,10 +1,21 @@
 #!/bin/bash
 
-# Update package lists
-sudo yum update -y
+# Ensure script stops on error
+set -e
 
-# Install required dependencies
-sudo yum install -y python3-pip python3-devel gcc
+# Create and activate a virtual environment
+python3 -m venv venv
+source venv/bin/activate
 
-# Install Python packages
-pip3 install -r requirements.txt
+# Upgrade pip to the latest version
+pip install --upgrade pip
+
+# Install Python packages from requirements.txt
+pip install -r requirements.txt
+
+# Add any other necessary build steps below
+# For example, if you need to run database migrations or collect static files for Django:
+# python manage.py migrate
+# python manage.py collectstatic --noinput
+
+echo "Build script completed successfully."
