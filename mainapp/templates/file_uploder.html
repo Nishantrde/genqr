@@ -238,17 +238,11 @@
                 
                 <input type="hidden" id="color1" name="front" value="(255, 255, 255)">
                 
-                <div class="filePreview" id="filePreview">
-                    <!-- Image will be displayed here -->
-                </div>
-
-                <div class="filePreview_msg" id="filePreview_msg">
-                    <!-- Image will be displayed here -->
-                </div>
+                <div id="fileNameDisplay"></div> 
 
                 <div class="logoUpload">
                     <label for="fileInput">Upload File</label>
-                    <input type="file" id="fileInput" name="file" accept="image/*" onchange="previewfile()">
+                    <input type="file" id="fileInput" name="file" accept="image/*" onchange="previewFile()">
                 </div>
 
                 <!-- Logo Preview -->
@@ -432,36 +426,16 @@
         }
 
         function previewFile() {
-            const file = document.getElementById('fileInput').files[0];
-            const preview = document.getElementById('filePreview');
-            const previewmsg = document.getElementById('filePreview_msg');
+    const file = document.getElementById('fileInput').files[0];
+    const fileNameDisplay = document.getElementById('fileNameDisplay'); // Element to display the file name
 
-            if (file) {
-                const reader = new FileReader();
+    if (file) {
+        fileNameDisplay.innerHTML = `<p>File name: ${file.name}</p>`; // Display file name
+    } else {
+        fileNameDisplay.innerHTML = ''; // Clear file name display if no file is selected
+    }
+}
 
-                reader.onloadend = function () {
-                    const textFileTypes = ['text/plain', 'application/json', 'application/xml'];
-                    const pdfFileType = 'application/pdf';
-
-                    if (textFileTypes.includes(file.type)) {
-                        preview.textContent = reader.result;
-                    } else if (file.type === pdfFileType) {
-                        preview.innerHTML = `<iframe src="${reader.result}" type="application/pdf" width="100%" height="600px"></iframe>`;
-                    } else {
-                        previewmsg.innerHTML = '<p>File preview not available for this file type. Please upload a text or PDF file.</p>';
-                    }
-                };
-
-                reader.onerror = function () {
-                    previewmsg.innerHTML = '<p>Error reading file. Please try again.</p>';
-                };
-
-                reader.readAsDataURL(file);
-            } else {
-                preview.innerHTML = '';
-                previewmsg.innerHTML = '';
-            }
-        }
 
         setupColorWheel('colorWheel1', 'colorDisplay1', 'brightness1');
         
