@@ -1,15 +1,16 @@
 import qrcode
 import cloudinary.uploader
 from tempfile import NamedTemporaryFile
-from .models import *
+from .models import Qrcodes
 import os
 import uuid
 from PIL import Image, ImageDraw
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
-def generate_qr_code(data, logo=None, front=(0, 0, 0), crop = "off", back=(255, 255, 255)):
+def generate_qr_code(data, url=None, logo=None, front=(0, 0, 0), crop="off", file=None, back=(255, 255, 255)):
     key = str(uuid.uuid4())
-    print(key)
-    qr_data = "https://genqr-ten.vercel.app/visit/" + key
+    print(f"Generated UUID: {key}")
+    qr_data = "https://genqr-ten.vercel.app/"+url+"/" + key
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_H,
@@ -42,7 +43,7 @@ def generate_qr_code(data, logo=None, front=(0, 0, 0), crop = "off", back=(255, 
         logo_size = (img.width // 4, img.height // 4)
         logo = logo.resize(logo_size, Image.LANCZOS)
         
-        if crop=="on":
+        if crop == "on":
             # Create a circular mask
             mask = Image.new("L", logo_size, 0)
             mask_draw = ImageDraw.Draw(mask)
@@ -60,17 +61,42 @@ def generate_qr_code(data, logo=None, front=(0, 0, 0), crop = "off", back=(255, 
 
     temp_file = NamedTemporaryFile(delete=False)
     img.save(temp_file.name, format='PNG')
+    file_name = None
+    cloudinary_fl_url = None
+    if file is not None:
+        try:
+            if isinstance(file, InMemoryUploadedFile):
+                # Handle InMemoryUploadedFile
+                
+                file_name = file.name
+                file.seek(0)
+                cloudinary_fl_response = cloudinary.uploader.upload(file, resource_type="auto")
+            else:
+                # Handle file path
+                with open(file, 'rb') as fl:
+                    file_name = fl.name
+                    cloudinary_fl_response = cloudinary.uploader.upload(fl, resource_type="auto")
+            cloudinary_fl_url = cloudinary_fl_response['url']
+            print(f"Uploaded file URL: {cloudinary_fl_url}")
+        except Exception as e:
+            print(f"Error uploading file to Cloudinary: {e}")
+            return None
 
-    # Upload image to Cloudinary
-    cloudinary_response = cloudinary.uploader.upload(temp_file.name)
-    cloudinary_url = cloudinary_response['url']
-
-    # Remove temporary file
-    temp_file.close()
-    os.unlink(temp_file.name)
+    # Upload the QR code image to Cloudinary
+    try:
+        cloudinary_response = cloudinary.uploader.upload(temp_file.name, resource_type="image")
+        cloudinary_url = cloudinary_response['url']
+        print(f"Uploaded QR code URL: {cloudinary_url}")
+    except Exception as e:
+        print(f"Error uploading QR code to Cloudinary: {e}")
+        return None
+    finally:
+        # Remove the temporary file
+        temp_file.close()
+        os.unlink(temp_file.name)
 
     # Save QR code data to the database
-    obj = Qrcodes.objects.create(qr=cloudinary_url, uuid=key, site=data)
+    obj = Qrcodes.objects.create(qr=cloudinary_url, uuid=key, site=data, file=cloudinary_fl_url, file_name=file_name)
     obj.save()
 
-    return cloudinary_url
+    return [cloudinary_url, qr_data, file_name]

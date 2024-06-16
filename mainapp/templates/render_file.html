@@ -1,0 +1,25 @@
+<div class="qr-code">
+    <a href="#" onclick="downloadImage('{{ file }}', '{{file_name}}');">
+        <img src="{{ file }}" alt="QR Code">
+    </a>
+</div>
+
+<script>
+    function downloadImage(url, filename) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url.replace(/^http:\/\//i, 'https://'), true);
+            xhr.responseType = 'blob';
+            xhr.onload = function () {
+                var urlCreator = window.URL || window.webkitURL;
+                var imageUrl = urlCreator.createObjectURL(this.response);
+                var tag = document.createElement('a');
+                tag.href = imageUrl;
+                tag.download = filename;
+                document.body.appendChild(tag);
+                tag.click();
+                document.body.removeChild(tag);
+            };
+            xhr.send();
+        }
+</script>
+

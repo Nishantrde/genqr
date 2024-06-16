@@ -8,5 +8,7 @@ class Qrcodes(models.Model):
     logo = CloudinaryField("logo", null=True, blank=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     site = models.CharField(null=True, blank=True)
+    file  = CloudinaryField("files", null=True, blank=True)
+    file_name = models.CharField(null=True, blank=True)
     def __str__(self):
         return str(self.uuid)

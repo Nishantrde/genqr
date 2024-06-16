@@ -67,7 +67,10 @@
         </form>
         <form action="custom" method="post">
             {% csrf_token %}
-            <button type="submit" onclick="toggleMode()">Custom QR Code</button>
+            <button type="submit" onclick="toggleMode()">Custom QR Code</button><br>
+        </form>
+        <form id="uploadForm" action="upload_files" method="get" onsubmit="cleanUrl(event)">
+            <button type="submit">Upload Files</button>
         </form>
         {% if photo %}
         <div class="qr-code">
@@ -94,6 +97,19 @@
                 document.body.removeChild(tag);
             };
             xhr.send();
+        }
+
+        function cleanUrl(event) {
+            event.preventDefault();
+            var form = document.getElementById('uploadForm');
+            var action = form.action;
+            var formData = new FormData(form);
+            var params = new URLSearchParams(formData).toString();
+            if (params) {
+                window.location.href = action + '?' + params;
+            } else {
+                window.location.href = action;
+            }
         }
     </script>
 </body>

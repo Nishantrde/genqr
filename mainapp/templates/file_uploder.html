@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dual Color Wheel with Logo Upload</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 10px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: 20px;
+            color: #333;
+        }
+
+        canvas {
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .colorDisplay {
+            width: 100px;
+            height: 50px;
+            border: 2px solid #ccc;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .brightnessPanel {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        /* Ensure text is readable on light and dark backgrounds */
+        .colorDisplay.dark {
+            color: #fff; /* Text color for dark background */
+        }
+
+        .colorDisplay.light {
+            color: #000; /* Text color for light background */
+        }
+
+        /* Adjust text color for "Front" container */
+        .frontText {
+            color: #444; /* Darker text color for better visibility */
+        }
+
+        /* Container styling for side-by-side layout */
+        .container-group {
+        display: flex;
+        flex-direction: column; /* Display items vertically */
+        align-items: center; /* Center items horizontally */
+        justify-content: center; /* Center items vertically */
+        height: 100vh; /* Ensure the container covers the entire viewport vertically */
+        }
+
+        /* Form styling */
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .logoUpload {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .logoUpload input[type="file"] {
+            display: none;
+        }
+
+        .logoUpload label {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .logoUpload label:hover {
+            background-color: #0056b3;
+        }
+
+        .logoPreview {
+            margin-top: 20px;
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .logoPreview img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .filePreview {
+            margin-top: 20px;
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .filePreview img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+
+        @media screen and (max-width: 600px) {
+            .container {
+                flex-direction: column;
+                margin-bottom: 20px;
+            }
+            .container-group {
+                flex-direction: column;
+            }
+            .colorDisplay {
+                width: 80%;
+            }
+            input[type="submit"] {
+                width: 80%;
+            }
+        }
+        @media screen and (max-width: 600px) {
+            .container {
+                width: 90%; /* Adjust container width for smaller screens */
+            }
+            canvas {
+                width: 100%; /* Make canvas responsive */
+                max-width: 200px; /* Limit canvas width on smaller screens */
+            }
+            .colorDisplay {
+                width: 80%; /* Adjust color display width */
+            }
+            input[type="submit"] {
+                width: 80%; /* Adjust submit button width */
+            }
+        }
+        .cropCheckbox {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.cropCheckbox input[type="checkbox"] {
+    display: none;
+}
+
+.cropCheckbox label {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.cropCheckbox label:hover {
+    background-color: #0056b3;
+}
+
+/* Style for checked state */
+.cropCheckbox input[type="checkbox"]:checked + label {
+    background-color: #0056b3;  
+}
+.cropCheckbox input[type="checkbox"]:checked + label {
+            background-color: #28a745; /* Green color */
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container-group">
+        <div class="container">
+            <h1 class="frontText">QR Data Color</h1>
+            <canvas id="colorWheel1" width="200" height="200"></canvas>
+            <div id="colorDisplay1" class="colorDisplay light">(255, 255, 255)</div>
+            <input id="brightness1" class="brightnessPanel" type="range" min="0" max="100" value="50">
+            <form action="upload_files" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <input type="hidden" id="color1" name="front" value="(255, 255, 255)">
+                
+                <div class="filePreview" id="filePreview">
+                    <!-- Image will be displayed here -->
+                </div>
+
+                <div class="filePreview_msg" id="filePreview_msg">
+                    <!-- Image will be displayed here -->
+                </div>
+
+                <div class="logoUpload">
+                    <label for="fileInput">Upload File</label>
+                    <input type="file" id="fileInput" name="file" accept="image/*" onchange="previewfile()">
+                </div>
+
+                <!-- Logo Preview -->
+                <div class="logoPreview" id="logoPreview">
+                    <!-- Image will be displayed here -->
+                </div>
+
+                <div class="logoPreview_msg" id="logoPreview_msg">
+                    <!-- Image will be displayed here -->
+                </div>
+
+                <div class="cropCheckbox">
+                    <input type="checkbox" id="cropCheckbox" name="crop">
+                    <label for="cropCheckbox">Crop Image</label>
+                </div><br>
+
+                <div class="logoUpload">
+                    <label for="logoInput">Upload Logo</label>
+                    <input type="file" id="logoInput" name="logo" accept="image/*" onchange="previewLogo()">
+                </div><br>
+        
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+        {% if photo %}
+        <!-- <h1>{{photo.0}}</h1> -->
+        <a href="{{ photo.1 }}">{{photo.1}}</a>
+            <div class="qr-code">
+                <a href="#" onclick="downloadImage('{{ photo.0 }}', 'qr_code.png');">
+                    <img src="{{ photo.0 }}" alt="QR Code">
+                </a>
+            </div>
+            
+        {% endif %}
+        </div>
+    
+    <!-- Form for submitting color wheel data -->
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+    // Add event listener to the Crop Image checkbox
+    const cropCheckbox = document.getElementById('cropCheckbox');
+    const submitButton = document.querySelector('input[type="submit"]');
+    
+    cropCheckbox.addEventListener('change', function() {
+        // Check if the checkbox is checked
+        if (cropCheckbox.checked) {
+            // Add a class to the submit button to change its background color to green
+            submitButton.classList.add('clicked');
+        } else {
+            // Remove the class from the submit button if the checkbox is unchecked
+            submitButton.classList.remove('clicked');
+        }
+    });
+});
+
+
+        function downloadImage(url, filename) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url.replace(/^http:\/\//i, 'https://'), true);
+            xhr.responseType = 'blob';
+            xhr.onload = function () {
+                var urlCreator = window.URL || window.webkitURL;
+                var imageUrl = urlCreator.createObjectURL(this.response);
+                var tag = document.createElement('a');
+                tag.href = imageUrl;
+                tag.download = filename;
+                document.body.appendChild(tag);
+                tag.click();
+                document.body.removeChild(tag);
+            };
+            xhr.send();
+        }
+        function setupColorWheel(canvasId, colorDisplayId, brightnessId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            const radius = canvas.width / 2;
+            const brightnessInput = document.getElementById(brightnessId);
+            const colorDisplay = document.getElementById(colorDisplayId);
+
+            function drawColorWheel() {
+                for (let angle = 0; angle < 360; angle += 1) {
+                    const startAngle = (angle * Math.PI) / 180;
+                    const endAngle = ((angle + 1) * Math.PI) / 180;
+                    ctx.beginPath();
+                    ctx.moveTo(radius, radius);
+                    ctx.arc(radius, radius, radius, startAngle, endAngle, false);
+                    ctx.closePath();
+                    ctx.fillStyle = `hsl(${angle}, 100%, ${brightnessInput.value}%)`;
+                    ctx.fill();
+                }
+            }
+
+            function hslToRgb(h, s, l) {
+                let r, g, b;
+
+                if (s === 0) {
+                    r = g = b = l; // achromatic
+                } else {
+                    const hue2rgb = (p, q, t) => {
+                        if (t < 0) t += 1;
+                        if (t > 1) t -= 1;
+                        if (t < 1 / 6) return p + (q - p) * 6 * t;
+                        if (t < 1 / 2) return q;
+                        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                        return p;
+                    };
+
+                    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                    const p = 2 * l - q;
+                    r = hue2rgb(p, q, h + 1 / 3);
+                    g = hue2rgb(p, q, h);
+                    b = hue2rgb(p, q, h - 1 / 3);
+                }
+
+                return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+            }
+
+            drawColorWheel();
+
+            canvas.addEventListener('click', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left - radius;
+                const y = e.clientY - rect.top - radius;
+                const angle = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+                const color = `hsl(${angle}, 100%, ${brightnessInput.value}%)`;
+                colorDisplay.style.backgroundColor = color;
+                const [r, g, b] = hslToRgb(angle / 360, 1, brightnessInput.value / 100);
+                colorDisplay.textContent = `(${r}, ${g}, ${b})`;
+
+                // Set the hidden input value for color data submission
+                if (canvasId === 'colorWheel1') {
+                    document.getElementById('color1').value = `(${r}, ${g}, ${b})`;
+                } else if (canvasId === 'colorWheel2') {
+                    document.getElementById('color2').value = `(${r}, ${g}, ${b})`;
+                }
+
+                // Determine if the background is light or dark and adjust text color accordingly
+                const lightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
+                if (lightness > 0.5) {
+                    colorDisplay.classList.remove('dark');
+                    colorDisplay.classList.add('light');
+                } else {
+                    colorDisplay.classList.remove('light');
+                    colorDisplay.classList.add('dark');
+                }
+            });
+
+            brightnessInput.addEventListener('input', () => {
+                drawColorWheel();
+            });
+        }
+
+        function previewLogo() {
+            const file = document.getElementById('logoInput').files[0];
+            const preview = document.getElementById('logoPreview');
+            const previewmsg = document.getElementById('logoPreview_msg');
+
+            const reader = new FileReader();
+
+            reader.onloadend = function() {
+                const img = new Image();
+                img.onload = function() {
+                    const maxWidth = 800; // Maximum width for the logo preview
+                    const maxHeight = 800; // Maximum height for the logo preview
+
+                    if (img.width <= maxWidth && img.height <= maxHeight) {
+                        preview.innerHTML = `<img src="${reader.result}" alt="Logo">`;
+                    } else {
+                        previewmsg.innerHTML = '<p>Logo dimensions are too large. Please upload a smaller logo.</p>';
+                    }
+                };
+                img.src = reader.result;
+            };
+
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = '';
+            }
+        }
+
+        function previewFile() {
+            const file = document.getElementById('fileInput').files[0];
+            const preview = document.getElementById('filePreview');
+            const previewmsg = document.getElementById('filePreview_msg');
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onloadend = function () {
+                    const textFileTypes = ['text/plain', 'application/json', 'application/xml'];
+                    const pdfFileType = 'application/pdf';
+
+                    if (textFileTypes.includes(file.type)) {
+                        preview.textContent = reader.result;
+                    } else if (file.type === pdfFileType) {
+                        preview.innerHTML = `<iframe src="${reader.result}" type="application/pdf" width="100%" height="600px"></iframe>`;
+                    } else {
+                        previewmsg.innerHTML = '<p>File preview not available for this file type. Please upload a text or PDF file.</p>';
+                    }
+                };
+
+                reader.onerror = function () {
+                    previewmsg.innerHTML = '<p>Error reading file. Please try again.</p>';
+                };
+
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = '';
+                previewmsg.innerHTML = '';
+            }
+        }
+
+        setupColorWheel('colorWheel1', 'colorDisplay1', 'brightness1');
+        
+    </script>
+</body>
+</html>
