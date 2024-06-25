@@ -94,4 +94,4 @@ def generate_qr_code(data, url=None, logo=None, front=(0, 0, 0), crop="off", fil
     obj = Qrcodes.objects.create(qr=cloudinary_url, uuid=key, site=data, file=cloudinary_fl_url, file_name=file_name)
     obj.save()
 
-    return [cloudinary_url, qr_data, file_name]
+    return cloudinary_url
