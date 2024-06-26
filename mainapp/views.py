@@ -61,6 +61,7 @@ def upload_files(request):
             
             print(site_add, front, logo, crop)
             qr_img = generate_qr_code(site_add, url, logo, front, str(crop), file)
+            print("here "+qr_img)
             # Save the QR code image or its identifier in session or database if you need to persist it
             request.session["qr_image"] = qr_img  # Example usage with session
             return HttpResponseRedirect(request.path_info)  # Redirect to the same page after POST

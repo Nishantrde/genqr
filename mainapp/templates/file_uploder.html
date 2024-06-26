@@ -269,10 +269,10 @@
         </div>
         {% if photo %}
         <!-- <h1>{{photo.0}}</h1> -->
-        <a href="{{ photo.1 }}">{{photo.1}}</a>
+        
             <div class="qr-code">
-                <a href="#" onclick="downloadImage('{{ photo.0 }}', 'qr_code.png');">
-                    <img src="{{ photo.0 }}" alt="QR Code">
+                <a href="#" onclick="downloadImage('{{ photo }}', 'qr_code.png');">
+                    <img src="{{ photo }}" alt="QR Code">
                 </a>
             </div>
             
